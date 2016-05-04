@@ -11,7 +11,7 @@ import subprocess
 
 
 # STEP 1: Deleting firewall rules
-print("DELETING FIREWALL RULES")
+print("\nDELETING FIREWALL RULES")
 
 print("Flushing iptables rules.")
 subprocess.call("sudo iptables --flush", shell=True)
@@ -22,7 +22,7 @@ subprocess.call("sudo service iptables save", shell=True)
 # STEP 2: Deleting queueing systems
 
 # STEP 3: Configure any network parameters
-print("CONFIGURING TCP PARAMETERS")
+print("\nCONFIGURING TCP PARAMETERS")
 
 print("Setting parameters in /proc/sys/net/ipv4/..")
 subprocess.call("echo 'htcp' > /proc/sys/net/ipv4/tcp_congestion_control", shell=True)
