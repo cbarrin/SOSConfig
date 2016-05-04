@@ -6,7 +6,7 @@
 #       - Pinning all of the interrupts
 #       - Installing and configuring OVS
 #       - Installing and configure the SOS agent
-
+import subprocess
 
 # STEP 1: Deleting firewall rules
 
@@ -31,7 +31,7 @@ subprocess.call("sudo ovs-vsctl add-port br0 " + hostInterface, shell=True)
 subprocess.call("sudo ifconfig " + hostInterface + " 0 up", shell=True)
 subprocess.call("sudo ifconfig br0 " + hostIP + " up", shell=True)
 subprocess.call("sudo ovs-vsctl set-controller br0 tcp:" + controllerIP + ":" + controllerPort, shell=True)
-subprocess.check_output("sudo ovs-vsctl show", shell=True)
-subprocess.check_output("ifconfig br0", shell=True)
+print subprocess.check_output("sudo ovs-vsctl show", shell=True)
+print subprocess.check_output("ifconfig br0", shell=True)
 
 # STEP 6: Install and configure SOS agent
