@@ -21,5 +21,21 @@ subprocess.call("sudo tc -s qdisc ls dev " + interface, shell=True)
 # STEP 4: Pin any interrupts to core 0
 
 # STEP 5: Install and configure OVS
+## Setting variables
+## Not setting MTU, will the # of interfaces remain same? such as CloudLab has 2 (physical and VLAN).
+
+controllerIP = raw_input("Please enter controller IP >>")
+controllerPort = raw_input("Please enter controller Port >>")
+hostInterface = raw_input("Please enter the local interface name>>")
+hostIP = raw_input("Please enter Host IP>>")
+
+print "Building bridge..."
+subprocess.call("sudo ovs-vsctl add-br br0", shell=True)
+subprocess.call("sudo ovs-vsctl add-port br0 " + hostInterface, shell=True)
+subprocess.call("sudo ifconfig " + hostInterface + " 0 up", shell=True)
+subprocess.call("sudo ifconfig br0 " + hostIP + " up", shell=True)
+subprocess.call("sudo ovs-vsctl set-controller br0 tcp:" + controllerIP + ":" + controllerPort, shell=True)
+print subprocess.check_output("sudo ovs-vsctl show", shell=True)
+print subprocess.check_output("ifconfig br0", shell=True)
 
 # STEP 6: Install and configure SOS agent
