@@ -24,29 +24,29 @@ subprocess.call("sudo service iptables save", shell=True)
 # STEP 3: Configure any network parameters
 print("CONFIGURING TCP PARAMETERS")
 
-subprocess.call("sudo bash << EOF")
+# subprocess.call("sudo bash << EOF", shell=True)
 
 print("Setting parameters in /proc/sys/net/ipv4/..")
-subprocess.call("echo 'htcp' > /proc/sys/net/ipv4/tcp_congestion_control")
-subprocess.call("echo 1 > /proc/sys/net/ipv4/tcp_low_latency")
-subprocess.call("echo '16777216 16777216 16777216' > /proc/sys/net/ipv4/tcp_mem")
-subprocess.call("echo '4096 87380 16777216' > /proc/sys/net/ipv4/tcp_rmem")
-subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_tcp_sack")
-subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_timestamps")
-subprocess.call("echo '4096 65536 16777216' > /proc/sys/net/ipv4/tcp_wmem")
+subprocess.call("echo 'htcp' > /proc/sys/net/ipv4/tcp_congestion_control", shell=True)
+subprocess.call("echo 1 > /proc/sys/net/ipv4/tcp_low_latency", shell=True)
+subprocess.call("echo '16777216 16777216 16777216' > /proc/sys/net/ipv4/tcp_mem", shell=True)
+subprocess.call("echo '4096 87380 16777216' > /proc/sys/net/ipv4/tcp_rmem", shell=True)
+subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_tcp_sack", shell=True)
+subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_timestamps", shell=True)
+subprocess.call("echo '4096 65536 16777216' > /proc/sys/net/ipv4/tcp_wmem", shell=True)
 
 print("Setting parameters in /proc/sys/net/core/..")
-subprocess.call("echo 30000 > /proc/sys/net/core/netdev_max_backlog")
-subprocess.call("echo 16777216 > /proc/sys/net/core/optmem_max")
-subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_default")
-subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_max")
-subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_default")
-subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max")
+subprocess.call("echo 30000 > /proc/sys/net/core/netdev_max_backlog", shell=True)
+subprocess.call("echo 16777216 > /proc/sys/net/core/optmem_max", shell=True)
+subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_default", shell=True)
+subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_max", shell=True)
+subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_default", shell=True)
+subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max", shell=True)
 
 print("Reloading sysctl now..")
-subprocess.call("sysctl -p")
+subprocess.call("sysctl -p", shell=True)
 
-subprocess.call("EOF")
+# subprocess.call("EOF", shell=True)
 
 # STEP 4: Pin any interrupts to core 0
 
