@@ -7,8 +7,12 @@
 #       - Installing and configuring OVS
 #       - Installing and configure the SOS agent
 
+import subprocess
+
 
 # STEP 1: Deleting firewall rules
+subprocess.call("sudo iptables --flush", shell=True)
+subprocess.call("sudo service iptables save", shell=True)
 
 # STEP 2: Deleting queueing systems
 
