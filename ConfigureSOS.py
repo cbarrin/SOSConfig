@@ -17,12 +17,14 @@ print("Flushing iptables rules.")
 subprocess.call("sudo iptables --flush", shell=True)
 
 print("Saving flushed iptables to file. Changes will be saved if service is restarted.")
-subprocess.call("sudo service iptables saves", shell=True)
+subprocess.call("sudo service iptables save", shell=True)
 
 # STEP 2: Deleting queueing systems
 
 # STEP 3: Configure any network parameters
 print("CONFIGURING TCP PARAMETERS")
+
+subprocess.call("sudo bash << EOF")
 
 print("Setting parameters in /proc/sys/net/ipv4/..")
 subprocess.call("echo 'htcp' > /proc/sys/net/ipv4/tcp_congestion_control")
@@ -43,6 +45,8 @@ subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max")
 
 print("Reloading sysctl now..")
 subprocess.call("sysctl -p")
+
+subprocess.call("EOF")
 
 # STEP 4: Pin any interrupts to core 0
 
