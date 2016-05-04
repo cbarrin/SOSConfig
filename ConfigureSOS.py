@@ -41,8 +41,8 @@ subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_max", shell=True)
 subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_default", shell=True)
 subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max", shell=True)
 
-print("Reloading sysctl now..")
-subprocess.call("sysctl -p", shell=True)
+#print("Reloading sysctl now..")
+#subprocess.call("sysctl -p", shell=True)
 
 # STEP 4: Pin any interrupts to core 0
 
