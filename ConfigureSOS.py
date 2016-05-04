@@ -6,11 +6,15 @@
 #       - Pinning all of the interrupts
 #       - Installing and configuring OVS
 #       - Installing and configure the SOS agent
-
+import subprocess
 
 # STEP 1: Deleting firewall rules
 
 # STEP 2: Deleting queueing systems
+
+interface = raw_input("Which interface to delete the queues?? >>")
+subprocess.call("sudo tc qdisc del dev " + interface + " root", shell=True)
+subprocess.call("sudo tc -s qdisc ls dev " + interface, shell=True)
 
 # STEP 3: Configure any network parameters
 
