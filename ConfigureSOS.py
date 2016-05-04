@@ -11,8 +11,13 @@ import subprocess
 
 
 # STEP 1: Deleting firewall rules
+print("DELETING FIREWALL RULES")
+
+print("Flushing iptables rules.")
 subprocess.call("sudo iptables --flush", shell=True)
-subprocess.call("sudo service iptables save", shell=True)
+
+print("Saving flushed iptables to file. Changes will be saved if service is restarted.")
+subprocess.call("sudo service iptables saves", shell=True)
 
 # STEP 2: Deleting queueing systems
 
