@@ -26,6 +26,7 @@ def deleteFirewallRules():
 
 def deleteQueueingSystems():
     ##We might have to extend this to iterate for every interface
+    # TODO: Make UI more robust in this section
 
     interface = raw_input("Which interface to delete the queues?? >>")
     print "\nDeleting queues for interface", interface
