@@ -103,7 +103,9 @@ try:
     subprocess.check_call("sudo ovs-vsctl show", shell=True)
 
 except(subprocess.CalledProcessError):
-    print("OVS is not installed!")
+    # TODO: Install OVS.
+    print("OVS is not installed! Install OVS and rerun the script. Exiting..")
+    exit(1)
 
 controllerIP = raw_input("Please enter controller IP >>")
 controllerPort = raw_input("Please enter controller OpenFlow port >>")
@@ -120,6 +122,6 @@ subprocess.call("sudo ovs-vsctl set-controller br0 tcp:" + controllerIP + ":" + 
 subprocess.call("sudo ifconfig br0 mtu " + mtu, shell=True)
 subprocess.call("sudo ifconfig " + hostInterface + " mtu " + mtu, shell=True)
 subprocess.call("sudo ovs-vsctl show", shell=True)
-subprocess.call("ifconfig br0")
+subprocess.call("ifconfig br0", shell=True)
 
 # STEP 6: Install and configure SOS agent
