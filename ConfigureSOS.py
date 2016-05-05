@@ -79,7 +79,7 @@ else:
 interrupt_output = interrupt_output.split('\n')
 
 num_cpus = multiprocessing.cpu_count()
-print("You have " + num_cpus + " cpus!")
+print("You have " + str(num_cpus) + " cpus!")
 
 print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
 for index, interrupt in enumerate(interrupt_output):
