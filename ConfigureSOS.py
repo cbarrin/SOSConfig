@@ -94,7 +94,6 @@ for index, interrupt in enumerate(interrupt_output):
 
 # TODO: Push other interrupts to core 0.
 
-
 # STEP 5: Install and configure OVS
 
 # We need to check if OVS is installed first. If it is not, then we should install it.
