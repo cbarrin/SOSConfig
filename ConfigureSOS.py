@@ -48,6 +48,8 @@ subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max", shell=True)
 
 # STEP 5: Install and configure OVS
 
+# We need to check if OVS is installed first. If it is not, then we should install it.
+
 controllerIP = raw_input("Please enter controller IP >>")
 controllerPort = raw_input("Please enter controller OpenFlow port >>")
 hostInterface = raw_input("Please enter the local interface name >>")
