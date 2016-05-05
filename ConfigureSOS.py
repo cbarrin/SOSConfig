@@ -157,14 +157,18 @@ def configureEverything():
     configureAgent()
 
 
-options = {0: configureEverything(),
-           1: deleteFirewallRules(),
-           2: deleteQueueingSystems(),
-           3: configureNetworkParameters(),
-           4: pinInterrupts(),
-           5: configureOVS(),
-           6: configureAgent(),
-           7: exit(0)
+def quitProgram():
+    exit(1)
+
+
+options = {0: configureEverything,
+           1: deleteFirewallRules,
+           2: deleteQueueingSystems,
+           3: configureNetworkParameters,
+           4: pinInterrupts,
+           5: configureOVS,
+           6: configureAgent,
+           7: quitProgram
            }
 
 while True:
