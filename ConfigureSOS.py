@@ -139,7 +139,7 @@ def configureOVS():
 
 
 def configureAgent():
-    print("Installing agent")
+    print("\nInstalling agent")
 
 
 def configureEverything():
@@ -182,4 +182,7 @@ while True:
     print("6: Configure the SOS agent.")
     print("7: Quit")
     choice = raw_input("Choose a number to run a module. What do you want to do? >> ")
-    options[choice]()
+    try:
+        options[choice]()
+    except(KeyError):
+        print("Invalid key pressed. Choose a number 0-7!")
