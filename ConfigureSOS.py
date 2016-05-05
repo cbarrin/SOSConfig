@@ -117,7 +117,7 @@ def setMtu():
         interface = raw_input("What interface do you want to set the mtu for? >> ")
         mtu = raw_input("And what do you want the mtu to be? >> ")
         try:
-            subprocess.check_call("ip link set " + interface + " mtu " + mtu)
+            subprocess.check_call("ip link set " + interface + " mtu " + mtu, shell=True)
             choice = raw_input("MTU set! Do you want to set another? >> ")
             choice = choice.strip().lower()
             if choice == "no" or choice == "n":
