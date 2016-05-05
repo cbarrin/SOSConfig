@@ -51,12 +51,12 @@ print("PINNING INTERRUPTS")
 
 print("Stopping the irqbalance service..")
 subprocess.call("sudo service irqbalance stop", shell=True)
-print(subprocess.check_output("sudo service irqbalance status", shell=True))
+subprocess.call("sudo service irqbalance status", shell=True)
 
 num_cpus = multiprocessing.cpu_count()
 interface = raw_input("What interface do you want to use? >> ")
 
-print(subprocess.check_output("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True))
+subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
 # if sys.version_info[:2] == (2, 6):
 #     interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True, stdout=subprocess.PIPE)
 #     interrupt_output = interrupt_output.communicate()[0]
