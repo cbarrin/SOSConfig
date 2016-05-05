@@ -8,6 +8,7 @@
 #       - Installing and configure the SOS agent
 
 import multiprocessing
+import re
 import subprocess
 import sys
 
