@@ -54,9 +54,16 @@ subprocess.call("sudo service irqbalance stop", shell=True)
 subprocess.call("sudo service irqbalance status", shell=True)
 
 num_cpus = multiprocessing.cpu_count()
-interface = raw_input("What interface do you want to use? >> ")
 
-subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
+while True:
+    subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
+    interface = raw_input("What interface do you want to use? >> ")
+    subprocess.call("ifconfig " + interface, shell=True)
+    confirm = raw_input("Are you sure you want to pin interrupts for interface " + interface + "? >> ")
+    confirm = confirm.strip().lower()
+    if confirm == "yes" or confirm == "y":
+        break
+
 # if sys.version_info[:2] == (2, 6):
 #     interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True, stdout=subprocess.PIPE)
 #     interrupt_output = interrupt_output.communicate()[0]
