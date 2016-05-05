@@ -109,6 +109,28 @@ def pinInterrupts():
             # TODO: Push other interrupts to core 0.
 
 
+def setMtu():
+    while True:
+        print("\nInterface:")
+        subprocess.call("ip addr | grep mtu | awk '/mtu/{print $2,$4,$5}'", shell=True)
+        print("\n")
+        interface = raw_input("What interface do you want to set the mtu for? >> ")
+        mtu = raw_input("And what do you want the mtu to be? >> ")
+        try:
+            subprocess.check_call("ip link set " + interface + " mtu " + mtu)
+            choice = raw_input("MTU set! Do you want to set another? >> ")
+            choice = choice.strip().lower()
+            if choice == "no" or choice == "n":
+                break
+        except(subprocess.CalledProcessError):
+            choice = raw_input("Invalid value! Try again? >> ")
+            choice = choice.strip().lower()
+            if choice == "no" or choice == "n":
+                break
+
+
+
+
 def configureOVS():
     # We need to check if OVS is installed first. If it is not, then we should install it.
 
@@ -166,9 +188,10 @@ options = {'0': configureEverything,
            '2': deleteQueueingSystems,
            '3': configureNetworkParameters,
            '4': pinInterrupts,
-           '5': configureOVS,
-           '6': configureAgent,
-           '7': quitProgram
+           '5': setMtu,
+           '6': configureOVS,
+           '7': configureAgent,
+           '8': quitProgram
            }
 
 while True:
@@ -178,11 +201,14 @@ while True:
     print("2: Delete queueing systems.")
     print("3: Configure network parameters.")
     print("4: Pin interrupts.")
-    print("5: Configure OVS.")
-    print("6: Configure the SOS agent.")
-    print("7: Quit")
+    print("5: Set MTU.")
+    print("6: Configure OVS.")
+    print("7: Configure the SOS agent.")
+    print("8: Quit")
+
     choice = raw_input("Choose a number to run a module. What do you want to do? >> ")
+
     try:
         options[choice]()
     except(KeyError):
-        print("Invalid key pressed. Choose a number 0-7!")
+        print("Invalid key pressed. Choose a number 0-8!")
