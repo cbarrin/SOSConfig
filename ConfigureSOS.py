@@ -53,34 +53,45 @@ print("Stopping the irqbalance service..")
 subprocess.call("sudo service irqbalance stop", shell=True)
 subprocess.call("sudo service irqbalance status", shell=True)
 
-num_cpus = multiprocessing.cpu_count()
-
+# TODO: Make it more obvious which is the right interface to choose. Clean up UI.
 while True:
+    print("\n")
     subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
+    print("\n")
     interface = raw_input("What interface do you want to use? >> ")
     subprocess.call("ifconfig " + interface, shell=True)
     confirm = raw_input("Are you sure you want to pin interrupts for interface " + interface + "? >> ")
     confirm = confirm.strip().lower()
     if confirm == "yes" or confirm == "y":
+        interface = interface.split('.')[0]
         break
 
-# if sys.version_info[:2] == (2, 6):
-#     interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True, stdout=subprocess.PIPE)
-#     interrupt_output = interrupt_output.communicate()[0]
-#
-# else:
-#     interrupt_output = subprocess.check_output("cat /proc/interrupts | grep " + interface, shell=True)
-#
-# interrupt_output = interrupt_output.split('\n')
-#
-# for index, interrupt in enumerate(interrupt_output):
-#     if interrupt:
-#         f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
-#         if index + 1 < num_cpus:
-#             f.write(str(index + 1))
-#         else:
-#             f.write(str(1) + "-" + str(num_cpus-1))
-#         print interrupt.split()[-1] + " now has affinity " + f.read()
+# TODO: Make sure this works for every version of python.
+if sys.version_info[:2] == (2, 6):
+    print("Python v2.6 detected. Using Popen.")
+    interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True, stdout=subprocess.PIPE)
+    interrupt_output = interrupt_output.communicate()[0]
+
+else:
+    print("Python version greater than v2.6 detected. Using check_output.")
+    interrupt_output = subprocess.check_output("cat /proc/interrupts | grep " + interface, shell=True)
+
+interrupt_output = interrupt_output.split('\n')
+
+num_cpus = multiprocessing.cpu_count()
+print("You have " + num_cpus + " cpus!")
+
+print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
+for index, interrupt in enumerate(interrupt_output):
+    if interrupt:
+        f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
+        if index + 1 < num_cpus:
+            f.write(str(index + 1))
+        else:
+            f.write(str(1) + "-" + str(num_cpus-1))
+        print(interrupt.split()[-1] + " now has affinity " + f.read())
+
+# TODO: Push other interrupts to core 0.
 
 #
 # # STEP 5: Install and configure OVS
