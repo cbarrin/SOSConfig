@@ -68,10 +68,10 @@ def pinInterrupts():
 
     # TODO: Make it more obvious which is the right interface to choose. Clean up UI.
     while True:
-        print("\n")
+        print("\nInterface:")
         subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
         print("\n")
-        interface = raw_input("What interface do you want to use? >> ")
+        interface = raw_input("What interface do you want to pin? >> ")
         subprocess.call("ifconfig " + interface, shell=True)
         confirm = raw_input("Are you sure you want to pin interrupts for interface " + interface + "? >> ")
         confirm = confirm.strip().lower()
