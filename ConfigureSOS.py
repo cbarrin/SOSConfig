@@ -8,10 +8,22 @@
 #       - Installing and configuring OVS
 #       - Installing and configure the SOS agent
 
+import fileinput
 import multiprocessing
 import re
 import subprocess
 import sys
+
+
+# Get the package manager.. yum for CentOS and apt-get for Ubuntu
+def getPackageManager():
+    r = subprocess.call("cat /etc/*-release | grep -c CentOS", shell=True)
+    if r == 0:
+        print("CentOS detected. Using yum as package manager..")
+        return "yum"
+    else:
+        print("Using apt-get as package manager..")
+        return "apt-get"
 
 
 def deleteFirewallRules():
@@ -130,8 +142,6 @@ def setMtu():
                 break
 
 
-
-
 def configureOVS():
     # We need to check if OVS is installed first. If it is not, then we should install it.
 
@@ -143,11 +153,11 @@ def configureOVS():
         print("OVS is not installed! Install OVS and rerun the script. Exiting..")
         exit(1)
 
-    controllerIP = raw_input("Please enter controller IP >>")
-    controllerPort = raw_input("Please enter controller OpenFlow port >>")
-    hostInterface = raw_input("Please enter the local interface name >>")
+    controllerIP = raw_input("Please enter controller IP >> ")
+    controllerPort = raw_input("Please enter controller OpenFlow port >> ")
+    hostInterface = raw_input("Please enter the local interface name >> ")
     hostIP = raw_input("Please enter host IP >>")
-    mtu = raw_input("Please enter the mtu for the local interface and the bridge >>")
+    mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
 
     print("Building bridge...")
     subprocess.call("sudo ovs-vsctl add-br br0", shell=True)
@@ -161,8 +171,46 @@ def configureOVS():
     subprocess.call("ifconfig br0", shell=True)
 
 
-def configureAgent():
-    print("\nInstalling agent")
+def installAndConfigureAgent():
+    print("\nInstalling and configuring the SOS agent!")
+
+    print("Installing necessary dependencies!")
+    pm = getPackageManager()
+    print("Installing clang..")
+    subprocess.call("sudo " + pm + " install clang -y")
+    print("Installing uuid-dev..")
+    subprocess.call("sudo " + pm + " install uuid-dev -y")
+    print("Installing libxml2-dev..")
+    subprocess.call("sudo " + pm + " install libxml2-dev -y")
+
+    print("Installing the SOS agent..")
+    subprocess.call("sudo git clone https://github.com/cbarrin/sos-agent.git", shell=True)
+
+    subprocess.call("cd sos-agent", shell=True)
+
+    # TODO: Make sure this works for every version of python.
+    if sys.version_info[:2] == (2, 6):
+        print("Python v2.6 detected. Using Popen.")
+        agent_subnet = subprocess.Popen("ip -o addr show | grep -E 'br0.*inet ' | awk '//{print $6}'", shell=True,
+                                        stdout=subprocess.PIPE)
+        agent_subnet = agent_subnet.communicate()[0]
+
+    else:
+        print("Python version greater than v2.6 detected. Using check_output.")
+        agent_subnet = subprocess.check_output("ip -o addr show | grep -E 'br0.*inet ' | awk '//{print $6}'",
+                                               shell=True)
+
+    # Replace DISCOVERY_DEST_ADDR and STATISTICS_DEST_ADDR with the subnet of 'br0'
+    # Two assumptions are made: that the current subnet is '192.168.1.255' and that
+    # the bridge is named 'br0'.
+    with fileinput.FileInput('common.h', inplace=True, backup='.bak') as file:
+        for line in file:
+            print(line.replace('192.168.1.255', agent_subnet))
+
+    # Not sure if this will work.. Might have to 'cd'
+    subprocess.call("make", shell=True)
+
+    print("To run the agent, use the command './run.sh'")
 
 
 def configureEverything():
@@ -177,7 +225,7 @@ def configureEverything():
     # STEP 5: Install and configure OVS
     configureOVS()
     # STEP 6: Install and configure SOS agent
-    configureAgent()
+    installAndConfigureAgent()
 
 
 def quitProgram():
@@ -191,7 +239,7 @@ options = {'0': configureEverything,
            '4': pinInterrupts,
            '5': setMtu,
            '6': configureOVS,
-           '7': configureAgent,
+           '7': installAndConfigureAgent,
            '8': quitProgram
            }
 
@@ -204,7 +252,7 @@ while True:
     print("4: Pin interrupts.")
     print("5: Set MTU.")
     print("6: Configure OVS.")
-    print("7: Configure the SOS agent.")
+    print("7: Install and configure the SOS agent.")
     print("8: Quit")
 
     choice = raw_input("Choose a number to run a module. What do you want to do? >> ")
