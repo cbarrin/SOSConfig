@@ -204,9 +204,11 @@ def installAndConfigureAgent():
     # Replace DISCOVERY_DEST_ADDR and STATISTICS_DEST_ADDR with the subnet of 'br0'
     # Two assumptions are made: that the current subnet is '192.168.1.255' and that
     # the bridge is named 'br0'.
-    with fileinput.FileInput('common.h', inplace=True, backup='.bak') as file:
-        for line in file:
-            print(line.replace('192.168.1.255', agent_subnet))
+    file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
+
+    for line in file:
+        print(line.replace('192.168.1.255', agent_subnet))
+    file.close()
 
     # Not sure if this will work.. Might have to 'cd'
     subprocess.call("make", shell=True)
