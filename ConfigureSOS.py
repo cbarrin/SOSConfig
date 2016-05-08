@@ -109,17 +109,18 @@ def pinInterrupts():
     num_cpus = multiprocessing.cpu_count()
     print("You have " + str(num_cpus) + " cpus!")
 
-    print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
-    for index, interrupt in enumerate(interrupt_output):
-        if interrupt:
-            f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
-            if index + 1 < num_cpus:
-                f.write(str(index + 1))
-            else:
-                f.write(str(1) + "-" + str(num_cpus - 1))
-            print(interrupt.split()[-1] + " now has affinity " + f.read())
+    if num_cpus > 1:
+        print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
+        for index, interrupt in enumerate(interrupt_output):
+            if interrupt:
+                f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
+                if index + 1 < num_cpus:
+                    f.write(str(index + 1))
+                else:
+                    f.write(str(1) + "-" + str(num_cpus - 1))
+                print(interrupt.split()[-1] + " now has affinity " + f.read())
 
-            # TODO: Push other interrupts to core 0.
+                # TODO: Push other interrupts to core 0.
 
 
 def setMtu():
