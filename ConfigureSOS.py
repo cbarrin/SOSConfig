@@ -10,6 +10,7 @@
 
 import fileinput
 import multiprocessing
+import os
 import re
 import subprocess
 import sys
@@ -187,7 +188,7 @@ def installAndConfigureAgent():
     print("Installing the SOS agent..")
     subprocess.call("sudo git clone https://github.com/cbarrin/sos-agent.git", shell=True)
 
-    subprocess.call("cd sos-agent", shell=True)
+    os.chdir("./sos-agent")
     subprocess.call("ls", shell=True)
 
     # TODO: Make sure this works for every version of python.
@@ -214,6 +215,7 @@ def installAndConfigureAgent():
     # Not sure if this will work.. Might have to 'cd'
     subprocess.call("make", shell=True)
 
+    os.chdir("..")
     print("To run the agent, use the command './run.sh'")
 
 
