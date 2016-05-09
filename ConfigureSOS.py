@@ -209,7 +209,7 @@ def installAndConfigureAgent():
     common_file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
 
     for line in common_file:
-        print(line.replace('192.168.1.255', agent_subnet))
+        print(line.replace('"192.168.1.255"', '"' + agent_subnet + '"'))
     common_file.close()
 
     # Not sure if this will work.. Might have to 'cd'
