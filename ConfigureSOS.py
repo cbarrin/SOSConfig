@@ -40,7 +40,7 @@ def deleteQueueingSystems():
     ##We might have to extend this to iterate for every interface
     # TODO: Make UI more robust in this section
 
-    interface = raw_input("Which interface to delete the queues?? >>")
+    interface = raw_input("Which interface to delete the queues?? >> ")
     print "\nDeleting queues for interface", interface
     ret = subprocess.check_output("sudo tc -s qdisc ls dev " + interface, shell=True)
     if ret:
@@ -82,7 +82,7 @@ def pinInterrupts():
     # TODO: Make it more obvious which is the right interface to choose. Clean up UI.
     while True:
         print("\nInterface:")
-        subprocess.call("ifconfig -a | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
+        subprocess.call("ifconfig | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
         print("\n")
         interface = raw_input("What interface do you want to pin? >> ")
         subprocess.call("ifconfig " + interface, shell=True)
@@ -188,6 +188,7 @@ def installAndConfigureAgent():
     subprocess.call("sudo git clone https://github.com/cbarrin/sos-agent.git", shell=True)
 
     subprocess.call("cd sos-agent", shell=True)
+    subprocess.call("ls", shell=True)
 
     # TODO: Make sure this works for every version of python.
     if sys.version_info[:2] == (2, 6):
@@ -204,11 +205,11 @@ def installAndConfigureAgent():
     # Replace DISCOVERY_DEST_ADDR and STATISTICS_DEST_ADDR with the subnet of 'br0'
     # Two assumptions are made: that the current subnet is '192.168.1.255' and that
     # the bridge is named 'br0'.
-    file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
+    common_file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
 
-    for line in file:
+    for line in common_file:
         print(line.replace('192.168.1.255', agent_subnet))
-    file.close()
+    common_file.close()
 
     # Not sure if this will work.. Might have to 'cd'
     subprocess.call("make", shell=True)
