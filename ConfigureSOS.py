@@ -206,7 +206,7 @@ def installAndConfigureAgent():
     # Replace DISCOVERY_DEST_ADDR and STATISTICS_DEST_ADDR with the subnet of 'br0'
     # Two assumptions are made: that the current subnet is '192.168.1.255' and that
     # the bridge is named 'br0'.
-    agent_subnet.strip('\n')
+    agent_subnet = agent_subnet.strip('\n')
     common_file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
 
     for line in common_file:
