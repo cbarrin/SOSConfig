@@ -107,15 +107,31 @@ def pinInterrupts():
         interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True,
                                             stdout=subprocess.PIPE)
         interrupt_output = interrupt_output.communicate()[0]
+        all_output = subprocess.Popen("cat /proc/interrupts", shell=True,
+                                            stdout=subprocess.PIPE)
+        all_output = all_output.communicate()[0]
 
     else:
         print("Python version greater than v2.6 detected. Using check_output.")
         interrupt_output = subprocess.check_output("cat /proc/interrupts | grep " + interface, shell=True)
+        all_output = subprocess.check_output("cat /proc/interrupts", shell=True)
 
     interrupt_output = interrupt_output.split('\n')
 
+    all_output = all_output.split('\n')
+    all_output.pop(0)
+
     num_cpus = multiprocessing.cpu_count()
     print("You have " + str(num_cpus) + " cpus!")
+
+    # Move everything over to core 0
+    if num_cpus > 1:
+        print("Pushing every interrupt over to core 0.")
+        for index, interrupt in enumerate(all_output):
+            if interrupt:
+                f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
+                f.write(str(0))
+                print(interrupt.split()[-1] + " now has affinity " + f.read())
 
     if num_cpus > 1:
         print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
