@@ -39,7 +39,6 @@ def deleteFirewallRules():
 
 def deleteQueueingSystems():
     ##We might have to extend this to iterate for every interface
-    # TODO: Make UI more robust in this section
     while True:
         print("\nInterface:")
         subprocess.call("ip addr | grep mtu | awk '/mtu/{print $2,$6,$7}'", shell=True)
@@ -161,11 +160,21 @@ def configureOVS():
         print("OVS is not installed! Install OVS and rerun the script. Exiting..")
         exit(1)
 
-    controllerIP = raw_input("Please enter controller IP >> ")
-    controllerPort = raw_input("Please enter controller OpenFlow port >> ")
-    hostInterface = raw_input("Please enter the local interface name >> ")
-    hostIP = raw_input("Please enter host IP >>")
-    mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
+    while True:
+        controllerIP = raw_input("Please enter controller IP >> ")
+        controllerPort = raw_input("Please enter controller OpenFlow port >> ")
+        hostInterface = raw_input("Please enter the local interface name >> ")
+        hostIP = raw_input("Please enter host IP >>")
+        mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
+        print("Controller IP: " + controllerIP)
+        print("Controller OpenFlow Port: " + controllerPort)
+        print("Host Interface: " + hostInterface)
+        print("Host IP: " + hostIP)
+        print("Interface and Bridge MTU: " + mtu)
+        choice = raw_input("Is this correct? >> ")
+        choice = choice.strip().lower()
+        if choice == "yes" or choice == "y":
+                break
 
     print("Building bridge...")
     subprocess.call("sudo ovs-vsctl add-br br0", shell=True)
