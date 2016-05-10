@@ -148,6 +148,23 @@ def setMtu():
         if choice == "no" or choice == "n":
                 break
 
+def removeBridge():
+    while True:
+        try:
+            subprocess.check_call("sudo ovs-vsctl show", shell=True)
+        except(subprocess.CalledProcessError):
+            print("OVS is not even installed!")
+            break
+        bridge = raw_input("\nWhich bridge do you want to remove? >> ")
+        subprocess.call("sudo ovs-ofctl show " + bridge, shell=True)
+        confirm = raw_input("Are you sure you want to remove bridge " + bridge + "? >> ")
+        confirm = confirm.strip().lower()
+        if confirm == "yes" or confirm == "y":
+            subprocess.call("sudo ovs-vsctl del-br " + bridge, shell=True)
+            print("\n" + bridge + " was removed!\n")
+            break
+
+
 
 def configureOVS():
     # We need to check if OVS is installed first. If it is not, then we should install it.
@@ -165,10 +182,12 @@ def configureOVS():
         controllerIP = raw_input("Please enter controller IP >> ")
         print("\nProbably something similar to '6011'..\n")
         controllerPort = raw_input("Please enter controller OpenFlow port >> ")
+        print("\n")
         subprocess.call("ip -o addr show", shell=True)
+        print("\n")
         hostInterface = raw_input("Please enter the local interface name >> ")
         print("\nBe sure to include the subnet. It will probably look like '10.0.0.1/24'..\n")
-        hostIP = raw_input("Please enter host IP >>")
+        hostIP = raw_input("Please enter host IP >> ")
         print("\nFor GENI: 1410\nFor CloudLab: 1500\nWhen using jumbo frames and VLANS: 8974\n")
         mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
         print("\nController IP: " + controllerIP)
@@ -181,6 +200,7 @@ def configureOVS():
         if choice == "yes" or choice == "y":
                 break
 
+    # TODO: Make sure OVS is set to out of band
     print("Building bridge...")
     subprocess.call("sudo ovs-vsctl add-br br0", shell=True)
     subprocess.call("sudo ovs-vsctl add-port br0 " + hostInterface, shell=True)
@@ -265,9 +285,10 @@ options = {'0': configureEverything,
            '3': configureNetworkParameters,
            '4': pinInterrupts,
            '5': setMtu,
-           '6': configureOVS,
-           '7': installAndConfigureAgent,
-           '8': quitProgram
+           '6': removeBridge,
+           '7': configureOVS,
+           '8': installAndConfigureAgent,
+           '9': quitProgram
            }
 
 while True:
@@ -278,13 +299,14 @@ while True:
     print("3: Configure network parameters.")
     print("4: Pin interrupts.")
     print("5: Set MTU.")
-    print("6: Configure OVS.")
-    print("7: Install and configure the SOS agent.")
-    print("8: Quit")
+    print("6: Remove bridge from OVS.")
+    print("7: Configure OVS.")
+    print("8: Install and configure the SOS agent.")
+    print("9: Quit")
 
     choice = raw_input("Choose a number to run a module. What do you want to do? >> ")
 
     try:
         options[choice]()
     except(KeyError):
-        print("Invalid key pressed. Choose a number 0-8!")
+        print("Invalid key pressed. Choose a number 0-9!")
