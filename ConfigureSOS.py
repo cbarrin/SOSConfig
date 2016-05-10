@@ -48,10 +48,18 @@ def deleteQueueingSystems():
         try:
             print "\nDeleting queues for interface", interface
             subprocess.check_call("sudo tc -s qdisc ls dev " + interface, shell=True)
-            subprocess.call("sudo tc qdisc del dev " + interface + " root", shell=True)
+            subprocess.check_call("sudo tc qdisc del dev " + interface + " root", shell=True)
             print "Queues deleted for interface", interface
+            choice = raw_input("Queues deleted! Do you want to delete another? >> ")
+            choice = choice.strip().lower()
+            if choice == "no" or choice == "n":
+                break
         except subprocess.CalledProcessError:
             print "No queues found for interface", interface
+            choice = raw_input("Try again? >> ")
+            choice = choice.strip().lower()
+            if choice == "no" or choice == "n":
+                break
 
 
 def configureNetworkParameters():
