@@ -161,10 +161,15 @@ def configureOVS():
         exit(1)
 
     while True:
+        print("\nThe public IP for the Clemson controller is '130.127.38.2'..\n")
         controllerIP = raw_input("Please enter controller IP >> ")
+        print("\nProbably something similar to '6011'..\n")
         controllerPort = raw_input("Please enter controller OpenFlow port >> ")
+        subprocess.call("ip -o addr show", shell=True)
         hostInterface = raw_input("Please enter the local interface name >> ")
+        print("\nBe sure to include the subnet. It will probably look like '10.0.0.1/24'..\n")
         hostIP = raw_input("Please enter host IP >>")
+        print("\nFor GENI: 1410\nFor CloudLab: 1500\nWhen using jumbo frames and VLANS: 8974\n")
         mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
         print("\nController IP: " + controllerIP)
         print("Controller OpenFlow Port: " + controllerPort)
