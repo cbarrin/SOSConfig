@@ -56,7 +56,7 @@ def deleteQueueingSystems():
 
         choice = choice.strip().lower()
         if choice == "no" or choice == "n":
-                break
+            break
 
 
 def configureNetworkParameters():
@@ -107,15 +107,39 @@ def pinInterrupts():
         interrupt_output = subprocess.Popen("cat /proc/interrupts | grep " + interface, shell=True,
                                             stdout=subprocess.PIPE)
         interrupt_output = interrupt_output.communicate()[0]
+        all_output = subprocess.Popen("cat /proc/interrupts", shell=True,
+                                      stdout=subprocess.PIPE)
+        all_output = all_output.communicate()[0]
 
     else:
         print("Python version greater than v2.6 detected. Using check_output.")
         interrupt_output = subprocess.check_output("cat /proc/interrupts | grep " + interface, shell=True)
+        all_output = subprocess.check_output("cat /proc/interrupts", shell=True)
 
     interrupt_output = interrupt_output.split('\n')
 
+    all_output = all_output.split('\n')
+    all_output.pop(0)
+
     num_cpus = multiprocessing.cpu_count()
-    print("You have " + str(num_cpus) + " cpus!")
+    print("\nYou have " + str(num_cpus) + " cpus!\n")
+
+    # Move everything over to core 0
+    if num_cpus > 1:
+        print("\nPushing every interrupt over to core 0.\n")
+        for index, interrupt in enumerate(all_output):
+            if interrupt:
+                if re.sub("\D", "", interrupt.split()[0]).isdigit():
+                    f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
+                    print("Attempting to write 0 in /proc/irq/" + re.sub("\D", "",
+                                                                         interrupt.split()[0]) + "/smp_affinity_list")
+                    f.write(str(0))
+                    try:
+                        print(interrupt.split()[-1] + " now has affinity " + f.read())
+                    except(IOError):
+                        print("Could not write 0 in /proc/irq/" + re.sub("\D", "",
+                                                                         interrupt.split()[0]) + "/smp_affinity_list\n")
+                    f.close()
 
     if num_cpus > 1:
         print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
@@ -146,7 +170,8 @@ def setMtu():
 
         choice = choice.strip().lower()
         if choice == "no" or choice == "n":
-                break
+            break
+
 
 def removeBridge():
     while True:
@@ -163,7 +188,6 @@ def removeBridge():
             subprocess.call("sudo ovs-vsctl del-br " + bridge, shell=True)
             print("\n" + bridge + " was removed!\n")
             break
-
 
 
 def configureOVS():
@@ -198,7 +222,7 @@ def configureOVS():
         choice = raw_input("\nIs this correct? >> ")
         choice = choice.strip().lower()
         if choice == "yes" or choice == "y":
-                break
+            break
 
     # TODO: Make sure OVS is set to out of band
     print("Building bridge...")
