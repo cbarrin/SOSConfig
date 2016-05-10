@@ -138,7 +138,7 @@ def pinInterrupts():
                         print(interrupt.split()[-1] + " now has affinity " + f.read())
                     except(IOError):
                         print("Could not write 0 in /proc/irq/" + re.sub("\D", "",
-                                                                         interrupt.split()[0]) + "/smp_affinity_list")
+                                                                         interrupt.split()[0]) + "/smp_affinity_list\n")
                     f.close()
 
     if num_cpus > 1:
