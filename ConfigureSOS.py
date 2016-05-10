@@ -51,15 +51,10 @@ def deleteQueueingSystems():
             subprocess.check_call("sudo tc qdisc del dev " + interface + " root", shell=True)
             print "Queues deleted for interface", interface
             choice = raw_input("Queues deleted! Do you want to delete another? >> ")
-            # choice = choice.strip().lower()
-            # if choice == "no" or choice == "n":
-            #     break
         except subprocess.CalledProcessError:
             print "No queues found for interface", interface
             choice = raw_input("Try again? >> ")
-            # choice = choice.strip().lower()
-            # if choice == "no" or choice == "n":
-            #     break
+
         choice = choice.strip().lower()
         if choice == "no" or choice == "n":
                 break
@@ -147,13 +142,11 @@ def setMtu():
         try:
             subprocess.check_call("ip link set " + interface + " mtu " + mtu, shell=True)
             choice = raw_input("MTU set! Do you want to set another? >> ")
-            choice = choice.strip().lower()
-            if choice == "no" or choice == "n":
-                break
         except(subprocess.CalledProcessError):
             choice = raw_input("Invalid value! Try again? >> ")
-            choice = choice.strip().lower()
-            if choice == "no" or choice == "n":
+
+        choice = choice.strip().lower()
+        if choice == "no" or choice == "n":
                 break
 
 
