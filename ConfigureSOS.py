@@ -47,7 +47,7 @@ def deleteQueueingSystems():
         try:
             print "\nDeleting queues for interface", interface
             subprocess.check_call("sudo tc -s qdisc ls dev " + interface, shell=True)
-            subprocess.check_call("sudo tc qdisc del dev " + interface + " root", shell=True)
+            subprocess.check_call("sudo tc qdisc replace dev " + interface + " root pfifo 10000", shell=True)
             print "Queues deleted for interface", interface
             choice = raw_input("Queues deleted! Do you want to delete another? >> ")
         except subprocess.CalledProcessError:
