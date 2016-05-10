@@ -122,11 +122,11 @@ def pinInterrupts():
     all_output.pop(0)
 
     num_cpus = multiprocessing.cpu_count()
-    print("You have " + str(num_cpus) + " cpus!")
+    print("\nYou have " + str(num_cpus) + " cpus!\n")
 
     # Move everything over to core 0
     if num_cpus > 1:
-        print("Pushing every interrupt over to core 0.")
+        print("\nPushing every interrupt over to core 0.\n")
         for index, interrupt in enumerate(all_output):
             if interrupt:
                 if re.sub("\D", "", interrupt.split()[0]).isdigit():
