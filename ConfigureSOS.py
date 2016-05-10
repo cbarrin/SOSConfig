@@ -129,13 +129,14 @@ def pinInterrupts():
         print("Pushing every interrupt over to core 0.")
         for index, interrupt in enumerate(all_output):
             if interrupt:
-                f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
-                print(interrupt)
-                print(f)
-                print("Attempting to write 0 in /proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list")
-                f.write(str(0))
-                # print(interrupt.split()[-1] + " now has affinity " +
-                #       f.read())
+                if re.sub("\D", "", interrupt.split()[0]).isdigit():
+                    f = open("/proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list", "r+")
+                    print(interrupt)
+                    print(f)
+                    print("Attempting to write 0 in /proc/irq/" + re.sub("\D", "", interrupt.split()[0]) + "/smp_affinity_list")
+                    f.write(str(0))
+                    # print(interrupt.split()[-1] + " now has affinity " +
+                    #       f.read())
 
     if num_cpus > 1:
         print("Setting smp_affinity_list values in /proc/irq/ to spread interrupts across all cores except core 0.")
