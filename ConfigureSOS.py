@@ -40,19 +40,18 @@ def deleteFirewallRules():
 def deleteQueueingSystems():
     ##We might have to extend this to iterate for every interface
     # TODO: Make UI more robust in this section
-    print("\nInterface:")
-    subprocess.call("ip addr | grep mtu | awk '/mtu/{print $2,$6,$7}'", shell=True)
-    print("\n")
-
-    interface = raw_input("Which interface to delete the queues?? >> ")
-    print "\nDeleting queues for interface", interface
-    ret = subprocess.check_output("sudo tc -s qdisc ls dev " + interface, shell=True)
-    if ret:
-        subprocess.call("sudo tc qdisc del dev " + interface + " root", shell=True)
-        # subprocess.call("sudo tc -s qdisc ls dev " + interface, shell=True)
-        print "Queues deleted for interface", interface
-    else:
-        print "No queues found for interface", interface
+    while True:
+        print("\nInterface:")
+        subprocess.call("ip addr | grep mtu | awk '/mtu/{print $2,$6,$7}'", shell=True)
+        print("\n")
+        interface = raw_input("Which interface to delete the queues?? >> ")
+        try:
+            print "\nDeleting queues for interface", interface
+            subprocess.check_call("sudo tc -s qdisc ls dev " + interface, shell=True)
+            subprocess.call("sudo tc qdisc del dev " + interface + " root", shell=True)
+            print "Queues deleted for interface", interface
+        except subprocess.CalledProcessError:
+            print "No queues found for interface", interface
 
 
 def configureNetworkParameters():
