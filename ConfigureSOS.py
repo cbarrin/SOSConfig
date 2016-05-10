@@ -166,12 +166,12 @@ def configureOVS():
         hostInterface = raw_input("Please enter the local interface name >> ")
         hostIP = raw_input("Please enter host IP >>")
         mtu = raw_input("Please enter the mtu for the local interface and the bridge >> ")
-        print("Controller IP: " + controllerIP)
+        print("\nController IP: " + controllerIP)
         print("Controller OpenFlow Port: " + controllerPort)
         print("Host Interface: " + hostInterface)
         print("Host IP: " + hostIP)
         print("Interface and Bridge MTU: " + mtu)
-        choice = raw_input("Is this correct? >> ")
+        choice = raw_input("\nIs this correct? >> ")
         choice = choice.strip().lower()
         if choice == "yes" or choice == "y":
                 break
