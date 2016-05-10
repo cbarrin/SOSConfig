@@ -40,6 +40,9 @@ def deleteFirewallRules():
 def deleteQueueingSystems():
     ##We might have to extend this to iterate for every interface
     # TODO: Make UI more robust in this section
+    print("\nInterface:")
+    subprocess.call("ip addr | grep mtu | awk '/mtu/{print $2,$6,$7}'", shell=True)
+    print("\n")
 
     interface = raw_input("Which interface to delete the queues?? >> ")
     print "\nDeleting queues for interface", interface
