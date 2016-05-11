@@ -258,13 +258,13 @@ def installAndConfigureAgent():
     # TODO: Make sure this works for every version of python.
     if sys.version_info[:2] == (2, 6):
         print("Python v2.6 detected. Using Popen.")
-        agent_subnet = subprocess.Popen("ip -o addr show | grep -E 'br0.*inet ' | awk '//{print $6}'", shell=True,
+        agent_subnet = subprocess.Popen("ip -o addr show br0 | grep -E 'br0.*inet ' | awk '//{print $6}'", shell=True,
                                         stdout=subprocess.PIPE)
         agent_subnet = agent_subnet.communicate()[0]
 
     else:
         print("Python version greater than v2.6 detected. Using check_output.")
-        agent_subnet = subprocess.check_output("ip -o addr show | grep -E 'br0.*inet ' | awk '//{print $6}'",
+        agent_subnet = subprocess.check_output("ip -o addr show br0 | grep -E 'br0.*inet ' | awk '//{print $6}'",
                                                shell=True)
 
     # Replace DISCOVERY_DEST_ADDR and STATISTICS_DEST_ADDR with the subnet of 'br0'
