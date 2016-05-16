@@ -250,6 +250,8 @@ def installAndConfigureAgent():
     subprocess.call("sudo " + pm + " install libxml2-dev -y", shell=True)
     print("Installing zlib1g-dev..")
     subprocess.call("sudo " + pm + " install zlib1g-dev -y", shell=True)
+    print("Installing make..")
+    subprocess.call("sudo " + pm + " install make -y", shell=True)
 
     print("Installing the SOS agent..")
     subprocess.call("sudo git clone https://github.com/cbarrin/sos-agent.git", shell=True)
