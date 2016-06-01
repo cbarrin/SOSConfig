@@ -62,22 +62,43 @@ def deleteQueueingSystems():
 def configureNetworkParameters():
     print("\nCONFIGURING TCP PARAMETERS")
 
-    print("Setting parameters in /proc/sys/net/ipv4/..")
+    print("Setting parameters in /proc/sys/net/..")
+    # recommended default congestion control is htcp
     subprocess.call("echo 'htcp' > /proc/sys/net/ipv4/tcp_congestion_control", shell=True)
-    subprocess.call("echo 1 > /proc/sys/net/ipv4/tcp_low_latency", shell=True)
-    subprocess.call("echo '16777216 16777216 16777216' > /proc/sys/net/ipv4/tcp_mem", shell=True)
-    subprocess.call("echo '4096 87380 16777216' > /proc/sys/net/ipv4/tcp_rmem", shell=True)
-    subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_sack", shell=True)
-    subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_timestamps", shell=True)
-    subprocess.call("echo '4096 65536 16777216' > /proc/sys/net/ipv4/tcp_wmem", shell=True)
 
-    print("Setting parameters in /proc/sys/net/core/..")
-    subprocess.call("echo 30000 > /proc/sys/net/core/netdev_max_backlog", shell=True)
-    subprocess.call("echo 16777216 > /proc/sys/net/core/optmem_max", shell=True)
-    subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_default", shell=True)
-    subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_max", shell=True)
-    subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_default", shell=True)
-    subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_max", shell=True)
+    # if set to 1, prefer lower latency as opposed to higher throughput
+    subprocess.call("echo 1 > /proc/sys/net/ipv4/tcp_low_latency", shell=True)
+
+    # These are the most important settings, especially if you’re using Gigabit networking
+    # there shouldn’t be any penalty to applying them to every server
+
+    # The hard limits for the maximum amount of socket buffer space, in bytes.
+    subprocess.call("echo 134217728 > /proc/sys/net/core/rmem_max", shell=True)
+    subprocess.call("echo 134217728 > /proc/sys/net/core/wmem_max", shell=True)
+
+    # These are the corresponding settings for the IP protocol, in the format (min, default, max) bytes.
+    # The max value can’t be larger than the equivalent net.core.{r,w}mem_max.
+    subprocess.call("echo '4096 87380 67108864' > /proc/sys/net/ipv4/tcp_rmem", shell=True)
+    subprocess.call("echo '4096 87380 67108864' > /proc/sys/net/ipv4/tcp_wmem", shell=True)
+
+    # Don’t touch tcp_mem for two reasons: Firstly, unlike tcp_rmem and tcp_wmem it’s in pages, not bytes, so it’s
+    # likely to confuse the hell out of you. Secondly, it’s already auto-tuned very well by Linux based on the
+    # amount of RAM.
+    # subprocess.call("echo '16777216 16777216 16777216' > /proc/sys/net/ipv4/tcp_mem", shell=True)
+
+    # Increase the number of outstanding syn requests allowed.
+    subprocess.call("echo 4096 > /proc/sys/net/ipv4/tcp_max_syn_backlog", shell=True)
+
+    subprocess.call("echo 300000 > /proc/sys/net/core/netdev_max_backlog", shell=True)
+
+    # # turn off selective ACK and timestamps
+    # subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_sack", shell=True)
+    # subprocess.call("echo 0 > /proc/sys/net/ipv4/tcp_timestamps", shell=True)
+    #
+    # print("Setting parameters in /proc/sys/net/core/..")
+    # subprocess.call("echo 16777216 > /proc/sys/net/core/optmem_max", shell=True)
+    # subprocess.call("echo 16777216 > /proc/sys/net/core/rmem_default", shell=True)
+    # subprocess.call("echo 16777216 > /proc/sys/net/core/wmem_default", shell=True)
 
 
 def pinInterrupts():
