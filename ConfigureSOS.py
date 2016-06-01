@@ -69,20 +69,20 @@ def configureNetworkParameters():
     # if set to 1, prefer lower latency as opposed to higher throughput
     subprocess.call("echo 1 > /proc/sys/net/ipv4/tcp_low_latency", shell=True)
 
-    # These are the most important settings, especially if you’re using Gigabit networking
-    # there shouldn’t be any penalty to applying them to every server
+    # These are the most important settings, especially if you're using Gigabit networking
+    # there shouldn't be any penalty to applying them to every server
 
     # The hard limits for the maximum amount of socket buffer space, in bytes.
     subprocess.call("echo 134217728 > /proc/sys/net/core/rmem_max", shell=True)
     subprocess.call("echo 134217728 > /proc/sys/net/core/wmem_max", shell=True)
 
     # These are the corresponding settings for the IP protocol, in the format (min, default, max) bytes.
-    # The max value can’t be larger than the equivalent net.core.{r,w}mem_max.
+    # The max value can't be larger than the equivalent net.core.{r,w}mem_max.
     subprocess.call("echo '4096 87380 67108864' > /proc/sys/net/ipv4/tcp_rmem", shell=True)
     subprocess.call("echo '4096 87380 67108864' > /proc/sys/net/ipv4/tcp_wmem", shell=True)
 
-    # Don’t touch tcp_mem for two reasons: Firstly, unlike tcp_rmem and tcp_wmem it’s in pages, not bytes, so it’s
-    # likely to confuse the hell out of you. Secondly, it’s already auto-tuned very well by Linux based on the
+    # Don't touch tcp_mem for two reasons: Firstly, unlike tcp_rmem and tcp_wmem it's in pages, not bytes, so it's
+    # likely to confuse the hell out of you. Secondly, it's already auto-tuned very well by Linux based on the
     # amount of RAM.
     # subprocess.call("echo '16777216 16777216 16777216' > /proc/sys/net/ipv4/tcp_mem", shell=True)
 
