@@ -113,6 +113,7 @@ def pinInterrupts():
         print("\nInterface:")
         subprocess.call("ifconfig | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
         print("\n")
+        #TODO Use ip command to choose the physical interface given the vlan interface (e.g. Cloudlab)
         interface = raw_input("What interface do you want to pin? >> ")
         subprocess.call("ifconfig " + interface, shell=True)
         confirm = raw_input("Are you sure you want to pin interrupts for interface " + interface + "? >> ")
@@ -230,6 +231,7 @@ def configureOVS():
         print("\n")
         subprocess.call("ip -o addr show", shell=True)
         print("\n")
+        #TODO Fix weird wording here to make it more apparent what is needed
         hostInterface = raw_input("Please enter the local interface name >> ")
         print("\nBe sure to include the subnet. It will probably look like '10.0.0.1/24'..\n")
         hostIP = raw_input("Please enter host IP >> ")
@@ -260,7 +262,8 @@ def configureOVS():
 
 def installAndConfigureAgent():
     print("\nInstalling and configuring the SOS agent!")
-
+    
+    #TODO make sure to update first before trying to install dependencies
     print("Installing necessary dependencies!")
     pm = getPackageManager()
     print("Installing clang..")
@@ -299,7 +302,7 @@ def installAndConfigureAgent():
     common_file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
 
     for line in common_file:
-        print(line.replace('"192.168.1.255"', '"' + agent_subnet + '"'))
+        print(line.replace('"10.0.0.255"', '"' + agent_subnet + '"'))
     common_file.close()
 
     # Not sure if this will work.. Might have to 'cd'
