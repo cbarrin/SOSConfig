@@ -113,14 +113,23 @@ def pinInterrupts():
         print("\nInterface:")
         subprocess.call("ifconfig | sed 's/[ \t].*//;/^\(lo\|\)$/d'", shell=True)
         print("\n")
-        #TODO Use ip command to choose the physical interface given the vlan interface (e.g. Cloudlab)
         interface = raw_input("What interface do you want to pin? >> ")
         subprocess.call("ifconfig " + interface, shell=True)
         confirm = raw_input("Are you sure you want to pin interrupts for interface " + interface + "? >> ")
         confirm = confirm.strip().lower()
         if confirm == "yes" or confirm == "y":
-            # TODO: Use 'ip link' to find vlans
-            interface = interface.split('.')[0]
+            ipoutput = subprocess.check_output("ip link", shell=True)
+            matching = [s for s in ipoutput.split('\n') if interface in s]
+            for match in matching:
+                links = match.split(' ')[1].split('@')
+                if len(links) == 1:
+                    interface = links[0].split(':')[0]
+                    print "Using physical interface: " + interface
+                    break
+                elif len(links) == 2:
+                    physicalinterface = links[1].split(':')[0]
+            interface = physicalinterface
+            print "Using physical interface: " + interface
             break
 
     # TODO: Make sure this works for every version of python.
@@ -231,8 +240,7 @@ def configureOVS():
         print("\n")
         subprocess.call("ip -o addr show", shell=True)
         print("\n")
-        #TODO Fix weird wording here to make it more apparent what is needed
-        hostInterface = raw_input("Please enter the local interface name >> ")
+        hostInterface = raw_input("Enter the interface that you want to add as a port to this bridge >> ")
         print("\nBe sure to include the subnet. It will probably look like '10.0.0.1/24'..\n")
         hostIP = raw_input("Please enter host IP >> ")
         print("\nFor GENI: 1410\nFor CloudLab: 1500\nWhen using jumbo frames and VLANS: 8974\n")
@@ -263,9 +271,10 @@ def configureOVS():
 def installAndConfigureAgent():
     print("\nInstalling and configuring the SOS agent!")
     
-    #TODO make sure to update first before trying to install dependencies
     print("Installing necessary dependencies!")
     pm = getPackageManager()
+    print("Updating...")
+    subprocess.call("sudo " + pm + " update -y", shell=True)
     print("Installing clang..")
     subprocess.call("sudo " + pm + " install clang -y", shell=True)
     print("Installing uuid-dev..")
@@ -300,9 +309,10 @@ def installAndConfigureAgent():
     # the bridge is named 'br0'.
     agent_subnet = agent_subnet.strip('\n')
     common_file = fileinput.FileInput('common.h', inplace=True, backup='.bak')
+    agent_broadcast = raw_input("Enter the broadcast address for the agent (e.g. 10.0.0.255, 192.168.1.255 etc.) >> ")
 
     for line in common_file:
-        print(line.replace('"10.0.0.255"', '"' + agent_subnet + '"'))
+        print(line.replace('"' + agent_broadcast + '"', '"' + agent_subnet + '"'))
     common_file.close()
 
     # Not sure if this will work.. Might have to 'cd'
@@ -330,6 +340,14 @@ def configureEverything():
 def quitProgram():
     exit(1)
 
+def test():
+    agent_subnet = subprocess.check_output("ip -o addr show br0 | grep -E 'br0.*inet ' | awk '//{print $6}'",
+                                               shell=True)
+    agent_subnet = agent_subnet.strip('\n')
+    agent_broadcast = raw_input("Enter the broadcast address for the agent (e.g. 10.0.0.255, 192.168.1.255 etc.) >> ")
+    print('"' + agent_broadcast + '"')
+    print('"' + agent_subnet + '"')
+
 
 options = {'0': configureEverything,
            '1': deleteFirewallRules,
@@ -340,7 +358,8 @@ options = {'0': configureEverything,
            '6': removeBridge,
            '7': configureOVS,
            '8': installAndConfigureAgent,
-           '9': quitProgram
+           '9': quitProgram,
+           '10': test
            }
 
 while True:
