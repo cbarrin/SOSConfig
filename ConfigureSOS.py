@@ -127,9 +127,8 @@ def pinInterrupts():
                     print "Using physical interface: " + interface
                     break
                 elif len(links) == 2:
-                    physicalinterface = links[1].split(':')[0]
-            interface = physicalinterface
-            print "Using physical interface: " + interface
+                    interface = links[1].split(':')[0]
+                    print "Using physical interface: " + interface
             break
 
     # TODO: Make sure this works for every version of python.
